@@ -1,0 +1,51 @@
+#manifests/05-backend-deployment.yaml
+# Despliegue del servicio backend (Node.js) que se conecta a MySQL
+# Este manifiesto crea dos réplicas del backend para alta disponibilidad y balanceo de carga
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  labels:
+    app: financial-backend
+spec:
+  replicas: 2  # Se crean 2 pods para alta disponibilidad
+  selector:
+    matchLabels:
+      app: financial-backend
+  template:
+    metadata:
+      labels:
+        app: financial-backend
+    spec:
+      containers:
+        - name: backend
+          image: miusuario/financial-backend:latest  # Reemplazar con tu usuario DockerHub. Imagen creada con Node.js y Express
+          ports:
+            - containerPort: 3000  # Puerto expuesto por el contenedor backend
+          env:
+            # Variables de entorno que se inyectan desde ConfigMap y Secret para configuración dinámica
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password

@@ -1,0 +1,45 @@
+# manifests/03-database-deployment.yaml
+# Despliegue de un contenedor de MySQL como base de datos
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment  # Nombre del deployment de la base de datos
+  labels:
+    app: financial-db
+spec:
+  replicas: 1  # Una única réplica
+  selector:
+    matchLabels:
+      app: financial-db
+  template:
+    metadata:
+      labels:
+        app: financial-db
+    spec:
+      containers:
+        - name: mysql  # Nombre del contenedor
+          image: mysql:8.0  # Imagen oficial de MySQL
+          env:
+            - name: MYSQL_DATABASE
+              value: finanzas  # Nombre de la base de datos
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret  # Referencia al secreto
+                  key: username
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secret
+                  key: password
+            - name: MYSQL_ROOT_PASSWORD
+              value: rootpassword123  # Contraseña del usuario root (puede hacerse secreto también)
+          ports:
+            - containerPort: 3306  # Puerto de MySQL
+          volumeMounts:
+            - name: db-storage  # Volumen para persistencia
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: db-storage
+          persistentVolumeClaim:
+            claimName: db-pvc  # PVC para almacenamiento persistente

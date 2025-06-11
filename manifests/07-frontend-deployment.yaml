@@ -1,0 +1,28 @@
+#manifests/07-frontend-deployment.yaml
+# Despliegue del frontend estático basado en Nginx
+# Sirve archivos HTML y se conecta al backend usando una variable de entorno
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: financial-frontend
+spec:
+  replicas: 2  # Alta disponibilidad para frontend
+  selector:
+    matchLabels:
+      app: financial-frontend
+  template:
+    metadata:
+      labels:
+        app: financial-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: miusuario/financial-frontend:latest  # Reemplazar con tu DockerHub. Imagen con Nginx y archivos HTML estáticos
+          ports:
+            - containerPort: 80  # Puerto donde Nginx sirve la página
+          env:
+            # Dirección del backend dentro del clúster
+            - name: BACKEND_URL
+              value: http://backend-service

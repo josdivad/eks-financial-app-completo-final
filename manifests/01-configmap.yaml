@@ -1,0 +1,12 @@
+# manifests/01-configmap.yaml
+# Crea un ConfigMap con parámetros de configuración para la base de datos del backend
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config  # Nombre del ConfigMap
+  labels:
+    app: financial-backend  # Etiqueta que identifica la aplicación asociada
+data:
+  DB_HOST: mysql-deployment  # Nombre del servicio/deployment de la base de datos
+  DB_PORT: "3306"            # Puerto de conexión de MySQL
+  DB_NAME: finanzas          # Nombre de la base de datos

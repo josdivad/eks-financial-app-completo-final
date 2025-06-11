@@ -1,0 +1,17 @@
+#manifests/08-frontend-service.yaml
+# Servicio LoadBalancer que expone el frontend al exterior de AWS
+# Esto permite acceder a la aplicación desde un navegador web
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  labels:
+    app: financial-frontend
+spec:
+  selector:
+    app: financial-frontend
+  ports:
+    - protocol: TCP
+      port: 80  # Puerto expuesto externamente
+      targetPort: 80  # Puerto dentro del contenedor frontend (Nginx)
+  type: LoadBalancer  # Crea una IP pública accesible desde fuera de AWS

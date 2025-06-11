@@ -1,0 +1,16 @@
+#manifests/04-database-pvc.yaml
+# Reclamación de volumen persistente para almacenar los datos de MySQL
+# Este recurso asegura que los datos de la base de datos no se pierdan si el pod se reinicia o se elimina
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: db-pvc
+  labels:
+    app: financial-db
+spec:
+  accessModes:
+    - ReadWriteOnce  # Acceso exclusivo por un solo nodo a la vez
+  resources:
+    requests:
+      storage: 5Gi  # Tamaño del almacenamiento persistente
+  storageClassName: gp2  # Clase de almacenamiento predeterminada en AWS EKS

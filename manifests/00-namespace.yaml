@@ -1,0 +1,6 @@
+# manifests/00-namespace.yaml
+# Define un nuevo espacio de nombres en el clúster Kubernetes llamado 'financiero'
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: financiero

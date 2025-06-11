@@ -1,0 +1,17 @@
+#manifests/06-backend-service.yaml
+# Servicio interno que expone el backend dentro del clúster
+# Usa ClusterIP ya que solo será accedido desde otros pods (como el frontend)
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  labels:
+    app: financial-backend
+spec:
+  selector:
+    app: financial-backend
+  ports:
+    - protocol: TCP
+      port: 80  # Puerto interno del servicio accesible desde otros pods
+      targetPort: 3000  # Puerto en el contenedor backend
+  type: ClusterIP  # Solo accesible dentro del clúster
