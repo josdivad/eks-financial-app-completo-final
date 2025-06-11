@@ -1,12 +1,11 @@
 #frontend/Dockerfile
-# Imagen base con Nginx
+# Este Dockerfile es para el frontend de la aplicación, que está escrito en HTML y utiliza Nginx como servidor web.
+
+# La imagen base es nginx:alpine, que es una imagen oficial de Nginx en Docker Hub
 FROM nginx:alpine
 
-# Elimina el archivo default de Nginx
-RUN rm -rf /usr/share/nginx/html/*
+# Establecemos el directorio de trabajo en /usr/share/nginx/html
+COPY index.html /usr/share/nginx/html/index.html
 
-# Copia el contenido del frontend al contenedor
-COPY . /usr/share/nginx/html
-
-# Expone el puerto 80 para servir contenido web
+#Se utiliza el puerto 80 por defecto para Nginx
 EXPOSE 80
