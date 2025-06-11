@@ -1,37 +1,40 @@
 //backend/server.js
-// Importa los módulos necesarios
 const express = require("express");
-const mysql = require("mysql");
-const app = express();
+const mysql = require("mysql2/promise");
 const cors = require("cors");
 
-// Middleware para permitir solicitudes de otros dominios
+const app = express();
 app.use(cors());
-app.use(express.json());
 
-// Variables de entorno para conectar a la base de datos
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME,
+const dbConfig = {
+  host: "mysql",
+  user: "root",
+  password: "1234",
+  database: "visitasdb",
+};
+
+app.get("/api/visitas", async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    await conn.execute(`
+      CREATE TABLE IF NOT EXISTS contador (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        visitas INT
+      )
+    `);
+    const [rows] = await conn.query(
+      "SELECT visitas FROM contador ORDER BY id DESC LIMIT 1"
+    );
+    let visitas = rows.length ? rows[0].visitas + 1 : 1;
+    await conn.execute("INSERT INTO contador (visitas) VALUES (?)", [visitas]);
+    await conn.end();
+    res.json({ visitas });
+  } catch (err) {
+    console.error("MySQL error:", err);
+    res.status(500).send("Error al acceder a MySQL");
+  }
 });
 
-// Ruta para responder con mensaje simple
-app.get("/", (req, res) => {
-  res.send("API del backend financiero");
-});
-
-// Ruta para obtener datos de prueba
-app.get("/usuarios", (req, res) => {
-  db.query("SELECT * FROM usuarios", (err, results) => {
-    if (err) return res.status(500).send(err);
-    res.json(results);
-  });
-});
-
-// Levanta el servidor en el puerto 3000
 app.listen(3000, () => {
-  console.log("Servidor backend corriendo en puerto 3000");
+  console.log("Backend escuchando en el puerto 3000");
 });
